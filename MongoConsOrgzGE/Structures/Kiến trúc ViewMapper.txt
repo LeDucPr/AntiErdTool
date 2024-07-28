@@ -1,0 +1,37 @@
+﻿1. Các khái niệm trong kiến trúc tổng thê 
+	View: Được sử dụng trong View(nhìn - bằng mắt), laqf các con số hay chữ, hay bất kỳ kiểu view nào mà bạn có thể thấy bằng các dữ liệu nguyên thủy nhất 
+	Unit: đơn vị đo lường của các đối tượng View được map lại chính xác. 
+		Đơn giản như bạn có một chỉ số (nếu là số lượng thì không nói), bạn có một vài thông số chỉ về cân năng chẳng hạn thì bạn cũng map lại như View 
+	UVConnects: (đơn vị kết nối giữa các đối tượng View và Unit (ví dụ như dấu :)).
+		Kiểu như bạn có (View) "Khối lượng": "_20", tương ứng (Unit) "Kg": "_20", và (UVConnects) ": ": "_20" 
+		Đơn giản thì "_20" đối tượng trong bảng của bạn mà chỉ thông qua View bạn mới hiểu, nó được map tương ứng với "_20" trong Id của nó tại Key của giá trị biểu thị 
+
+Các bảng được đề cập chỉ mục thể hiện việc liên kết dữ liệu, không liên quan gì đến hiển thị 
+(dặn trước thế do đặt tên có thể gây nhầm lẫn)
+
+- View sẽ được Map với thành phần dữ liệu chính gồm các khóa sử dụng trong việc kết nối các DocFields trong hệ thống cấu trúc dữ liệu
+- Unit sẽ được Map với các giá trị dữ liệu chính gồm các giá trị trong bảng dữ liệu dựa trên DocFields
+
+- Hiểu đơn giản một cái Map với Key, một cái Map với Value.
+
+- Cần chuyển qua một đối tượng có kiế trúc kế thừa thằng BasicComponent để sử dụng chung, nhưng cs quy chuẩn để tách indexLocal và indexOfObjectTree
+
+
+- Thực chất thì bạn sẽ không có một đói tượng nào tồn tại cả, Tool của bạn thực tế như một bộ công cụ giao tiếp giữa database và các thực thể và luật kết hợp do người dùng nghĩ ra.
+Do đó sẽ không có một đối tượng nào được trả về cả. Những gì bạn đang làm không thông qua đối tượng để kết nối tới dữ liệu, mà chỉ 
+là các thao tác thông qua tool để tương tác với dữ liệu đó.
+
+	+ Vấn đề việc triển khai cấu trúc này giúp duy trì việc nhập liệu
+	  -> Bạn có thể thay đổi được phần cấu trúc dữ liệu của Docs(Bson) theo đúng kiểu 
+		  --View<OverallUV>(Phần này lưu trữ kiến trúc ngoài cùng, thường liên quan đến thiết kế trong giao diện mã nguồn (C#))
+			(Chứa đấu tượng là gốc của cây (BasicComponent))  
+			--BasicComponent (như đã đề cập ở trên, là gốc của cây cấu trúc dữ liệu, các phần tử không phải là đối tượng (dưới góc nhìn của BSON(MongoDB)))
+			  --EntityComponent<BasicComponent> (đối tượng được sử dụng dạng này đầu tiên cũng là đối tượng bắt đầu cho Các đối tượng (dưới góc nhìn của MongoDB))
+			    --PrimeComponent<EntityComponent<BasicComponent>> (bạn có thể coi nó là một đối tượng hoặc nhưng mà là một cách quy ước được đánh dấu kết thúc việc tạo đối tượng(dưới góc nhìn của MongoDB)
+				  Và nó sẽ được sử dụng để quy ước vài kiểu dữ liệu nguyên thủy cần thiết. Cụ thể là String, Int, Double, DateTime.
+				  Khi bạn sử dụng thành phần này, về mặt lý thuyết thì Cây của bạn chưa kết thúc nhưng thành phần tiếp theo bạn cần làm lớp con của nó là một PrimitiveDataComponent)
+				  --PrimitiveDataComponent<PrimeComponent<EntityComponent<BasicComponent>>> Thành phần này lưu toàn bộ trường kết nối tới Collection chứa các Docs cùng kiểu dữ liệu của bạn 
+				    Dưới góc nhìn này thì nó sẽ là khoản liên kết tới môt Collection cụ thể, và các trường của nó được định danh bằng các trường đánh dấu tên tương ứng 
+
+
+

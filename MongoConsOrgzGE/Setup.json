@@ -1,0 +1,18 @@
+{
+  "View": {
+    "Languages": {
+      "Vietnamese": {
+        "Phone": {
+          "Tên điện thoại": { "_0": "Phone.Tên điện thoại._0" },
+          "Mã Series": { "_1": "Phone.Mã Series._1" },
+          "Kích thước": {
+            "_": { "_2": "Phone.Kích thước._._2" },
+            "Chiều rộng": { "_0": "Phone.Kích thước.Chiều rộng._0" },
+            "Chiều dài": { "_1": "Phone.Kích thước.Chiều dài._1" }
+          },
+          "Màu sắc": { "_3": "Phone.Màu sắc._3" }
+        }
+      }
+    }
+  }
+}
