@@ -49,10 +49,10 @@ namespace MongoConsOrgzGE.Structures.Common
             BasicComponent _0view = new BasicComponent(Name, new BasicComponent()); // value -> langueges
             BasicComponent _1languages = new BasicComponent("Languages", new BsonDocument());
             // Vietnamese
-            BasicComponent _2vietnamese = new BasicComponent("Vietnamese", new BsonDocument());
+            BasicComponent _2vietnamese = new EntityComponent("Vietnamese", new BsonDocument());
             // dưới đây là cấu trúc bảng, có ghì muốn tạo thì sau ghi đè vào 
 
-            BasicComponent _3Phone = new EntityComponent("Phone", new BsonDocument());
+            BasicComponent _3Phone = new EntityComponent("Điện thoại", new BsonDocument());
             BasicComponent _4PhoneName = new EntityComponent("Tên điện thoại", new BsonDocument());
             BasicComponent _4SeriesCode = new EntityComponent("Mã Series", new BsonDocument());
             BasicComponent _4Size = new EntityComponent("Kích thước", new BsonDocument());
