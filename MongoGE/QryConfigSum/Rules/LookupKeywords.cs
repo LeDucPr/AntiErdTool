@@ -46,7 +46,10 @@ namespace MongoGE.QryConfigSum.Rules
             try
             {
                 if (LookupKeywordsConfig.Single.LookupKeywordType.Contains(mlkKey))
-                    _val = bsonCondition;
+                {
+                    if (LookupKeywordsConfig.Single.dfltBsonValTypes.Contains(bsonCondition.GetType()))
+                        _val = bsonCondition;
+                }
                 else if (LookupKeywordsConfig.Let.LookupKeywordType.Contains(mlkKey))
                     _val = bsonCondition;
                 else if (LookupKeywordsConfig.Pipeline.LookupKeywordType.Contains(mlkKey))
@@ -54,7 +57,7 @@ namespace MongoGE.QryConfigSum.Rules
                 else
                     throw new ArgumentException($"Không hỗ trợ toán tử {nameof(mlkKey)} trong MongoLookupKeyword");
             }
-            catch 
+            catch
             {
                 _key = null!;
                 _val = null!;
