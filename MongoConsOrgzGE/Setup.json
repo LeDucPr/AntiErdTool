@@ -226,5 +226,23 @@
       },
       "_3": "Racing Green"
     }
-  ]
+  ],
+
+
+
+  "Xeon_E5_2682v4__MyPC_Aggrigation": {
+    " db.Book.find() 
+    [
+      {
+        "$match": {
+          "TotalPart": 1,
+          "Description": {
+            "$regex": "Sử",
+            "$options": "i"
+          }
+        }
+      }
+    ]
+    "
+  }
 }
