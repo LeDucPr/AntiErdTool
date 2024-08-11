@@ -120,5 +120,12 @@ namespace MongoGE.Connections
             List<BsonDocument> sortedDocuments = await _collection.Find(new BsonDocument()).Sort(sort).ToListAsync();
             return sortedDocuments;
         }
+        // tạo aggregation
+        public async Task<List<BsonDocument>> AggregateBsons(List<BsonDocument> pipeline)
+        {
+            var aggregation = _collection.Aggregate<BsonDocument>(pipeline);
+            List<BsonDocument> documents = await aggregation.ToListAsync();
+            return documents;
+        }
     }
 }

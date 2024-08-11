@@ -1,5 +1,5 @@
-{
-  "View": {
+{ //Kiến trúc v1
+  "View_V1": {
     "Languages": {
       "Vietnamese": {
         "Phone": {
@@ -14,5 +14,235 @@
         }
       }
     }
+  },
+  // Kiến trúc kết hợp Aggrigate với các toán tử thực thi map trực tiếp 
+  // vào trong Các trường thực thi cũng được đánh số tương tự như trong
+  // kiến trúc các trường dữ liệu trong đối tượng 
+  "View_V2": { //Kiến trúc v2 (hiện tại thì nó chưa đúng đâu)
+    "Languages": {
+      "Vietnamese": {
+        "Phone": {
+          "Tên điện thoại": {},
+          "Mã Series": { "_1": "Phone.Mã Series._1" },
+          "Kích thước": {
+            "_": { "_2": "Phone.Kích thước._._2" },
+            "Chiều rộng": { "_0": "Phone.Kích thước.Chiều rộng._0" },
+            "Chiều dài": { "_1": "Phone.Kích thước.Chiều dài._1" }
+          },
+          "Màu sắc": { "_3": "Phone.Màu sắc._3" }
+        }
+      }
+    }
+  },
+
+  // Kiến trúc bản ghi tiếng Việt
+  "Điện thoại": [
+    {
+      "_0": "Samsung Galaxy S9",
+      "_1": "S8892",
+      "_2": {
+        "_0": "68.7mm",
+        "_1": "147.7mm"
+      },
+      "_3": "Đen"
+    },
+    {
+      "_0": "iPhone 14 Pro Max",
+      "_1": "A2892",
+      "_2": {
+        "_0": "77.6mm",
+        "_1": "160.7mm"
+      },
+      "_3": "Deep Purple"
+    },
+    {
+      "_0": "Samsung Galaxy S23 Ultra",
+      "_1": "SM-S918B",
+      "_2": {
+        "_0": "78.1mm",
+        "_1": "163.4mm"
+      },
+      "_3": "Phantom Black"
+    },
+    {
+      "_0": "Google Pixel 7 Pro",
+      "_1": "GZLJ6",
+      "_2": {
+        "_0": "76.6mm",
+        "_1": "163mm"
+      },
+      "_3": "Snow"
+    },
+    {
+      "_0": "Xiaomi 13 Pro",
+      "_1": "2208123AC",
+      "_2": {
+        "_0": "74.6mm",
+        "_1": "162.9mm"
+      },
+      "_3": "Ceramic White"
+    },
+    {
+      "_0": "OnePlus 11",
+      "_1": "CPH2451",
+      "_2": {
+        "_0": "73.3mm",
+        "_1": "163.2mm"
+      },
+      "_3": "Eternal Green"
+    },
+    {
+      "_0": "OPPO Find X6 Pro",
+      "_1": "PGM110",
+      "_2": {
+        "_0": "74mm",
+        "_1": "163.2mm"
+      },
+      "_3": "Astral Black"
+    },
+    {
+      "_0": "Vivo X90 Pro+",
+      "_1": "V2230A",
+      "_2": {
+        "_0": "74.5mm",
+        "_1": "164.1mm"
+      },
+      "_3": "Legend Red"
+    },
+    {
+      "_0": "Honor Magic5 Pro",
+      "_1": "NHA-AL00",
+      "_2": {
+        "_0": "72.8mm",
+        "_1": "162.9mm"
+      },
+      "_3": "Emerald Green"
+    },
+    {
+      "_0": "Sony Xperia 1 V",
+      "_1": "XQ-DT54",
+      "_2": {
+        "_0": "68mm",
+        "_1": "165mm"
+      },
+      "_3": "Black"
+    },
+    {
+      "_0": "Nokia X30 5G",
+      "_1": "TA-1529",
+      "_2": {
+        "_0": "73mm",
+        "_1": "158.2mm"
+      },
+      "_3": "Cloud White"
+    },
+    {
+      "_0": "Xiaomi 14 Ultra",
+      "_1": "2311123AB",
+      "_2": {
+        "_0": "75mm",
+        "_1": "164mm"
+      },
+      "_3": "Ceramic Black"
+    },
+    {
+      "_0": "Samsung Galaxy Z Fold5",
+      "_1": "SM-F946B",
+      "_2": {
+        "_0": "67.3mm",
+        "_1": "154.9mm"
+      },
+      "_3": "Phantom White"
+    },
+    {
+      "_0": "Google Pixel 8 Pro",
+      "_1": "GZLJ7X",
+      "_2": {
+        "_0": "77mm",
+        "_1": "162.5mm"
+      },
+      "_3": "Porcelain"
+    },
+    {
+      "_0": "OnePlus Nord 3T",
+      "_1": "CPH2459",
+      "_2": {
+        "_0": "73mm",
+        "_1": "162.8mm"
+      },
+      "_3": "Silverstone"
+    },
+    {
+      "_0": "OPPO Find N3",
+      "_1": "PGM120",
+      "_2": {
+        "_0": "72.5mm",
+        "_1": "158mm"
+      },
+      "_3": "Starry Black"
+    },
+    {
+      "_0": "Vivo X90 Pro+",
+      "_1": "V2230A",
+      "_2": {
+        "_0": "74.5mm",
+        "_1": "164.1mm"
+      },
+      "_3": "Legend Red"
+    },
+    {
+      "_0": "Honor Magic6 Pro",
+      "_1": "NHA-AL10",
+      "_2": {
+        "_0": "72.8mm",
+        "_1": "162.9mm"
+      },
+      "_3": "Emerald Green"
+    },
+    {
+      "_0": "Sony Xperia 1 IV",
+      "_1": "XQ-DT54",
+      "_2": {
+        "_0": "68mm",
+        "_1": "165mm"
+      },
+      "_3": "Black"
+    },
+    {
+      "_0": "Nokia X40",
+      "_1": "TA-1529",
+      "_2": {
+        "_0": "73mm",
+        "_1": "158.2mm"
+      },
+      "_3": "Cloud White"
+    },
+    {
+      "_0": "Realme GT Neo 6",
+      "_1": "RMX3770",
+      "_2": {
+        "_0": "74mm",
+        "_1": "163mm"
+      },
+      "_3": "Racing Green"
+    }
+  ],
+
+
+
+  "Xeon_E5_2682v4__MyPC_Aggrigation": {
+    " db.Book.find() 
+    [
+      {
+        "$match": {
+          "TotalPart": 1,
+          "Description": {
+            "$regex": "Sử",
+            "$options": "i"
+          }
+        }
+      }
+    ]
+    "
   }
 }

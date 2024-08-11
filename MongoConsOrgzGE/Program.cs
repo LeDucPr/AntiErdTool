@@ -1,4 +1,5 @@
-﻿using MongoConsOrgzGE.Structures.Common.Enums;
+﻿using MongoConsOrgzGE.Structures.Common;
+using MongoConsOrgzGE.Structures.Common.Enums;
 using MongoConsOrgzGE.Structures.Entities;
 using MongoConsOrgzGE.Structures.Mapper;
 using MongoConsOrgzGE.Structures.Views;
@@ -17,6 +18,8 @@ namespace MongoConsOrgzGE
             Console.WriteLine(view.BasicComponent);
             //Console.WriteLine(view.BasicComponent["Languages"]);
             //Console.WriteLine(view.BasicComponent["Languages"]!["Vietnamese"]!["Phone"]!["Tên điện thoại"]!.TryGetEntityComponent()!.IndexInObjectGraph);
+            //Console.WriteLine(view.BasicComponent["Languages"]!["Vietnamese"]!.TryGetEntityComponent()!.IndexInObjectGraph);
+            PipelineConnector pipelineConnector = new PipelineConnector(view.BasicComponent);
         }
     }
 }

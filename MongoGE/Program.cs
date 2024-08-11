@@ -1,55 +1,11 @@
-﻿using MongoGE.Connections;
-using MongoDB.Bson;
-using System.Net.Http.Headers;
-using System.ComponentModel.DataAnnotations;
-using ZstdSharp.Unsafe;
-using System.Reflection;
+﻿using MongoDB.Bson;
+using MongoGE.Connections;
+using MongoGE.QryConfigSum;
+using MongoGE.QryConfigSum.Rules;
+using System.Text.RegularExpressions;
 
 namespace MongoGE
 {
-    public class Uzi
-    {
-        // viết các thuộc tính của súng tiểu liên Uzi
-        public string Name { get; set; }
-        public string Manufacturer { get; set; }
-        public int Damage { get; set; }
-        public int FireRate { get; set; }
-        public int MagazineSize { get; set; }
-        public int ReloadTime { get; set; }
-        public int Recoil { get; set; }
-    }
-
-    public class Monster
-    {
-        // viết một số thuộc tính của Monster
-        public string Name { get; set; }
-        public int Level { get; set; }
-        public int Health { get; set; }
-        public int Mana { get; set; }
-        public int Attack { get; set; }
-        public int Defense { get; set; }
-        public int Speed { get; set; }
-        public Type Type { get; set; }
-        public Uzi Uzi { get; set; }
-
-        // tạo một phương thức in tất cả thuộc tính của monster bằng GetProperties
-        public Dictionary<Type, PropertyInfo[]> PrintProperties()
-        {
-            Dictionary<Type, PropertyInfo[]> pros = new Dictionary<Type, PropertyInfo[]>();
-            pros.Add(typeof(Monster), GetType().GetProperties());
-            PropertiesRecursion(this.GetType(), ref pros);
-            return pros;
-        }
-        public void PropertiesRecursion(Type currentType, ref Dictionary<Type, PropertyInfo[]> pros)
-        {
-            var properties = currentType.GetProperties();
-            foreach (var property in properties)
-            {
-                PropertiesRecursion(property.PropertyType, ref pros);
-                System.Console.WriteLine($"{property.Name}: {property.GetValue(this)}");
-            }
-        }
-    }
 
     internal class Program
     {
@@ -57,22 +13,163 @@ namespace MongoGE
         {
             System.Console.OutputEncoding = System.Text.Encoding.UTF8;
 
-            // tạo một monster
-            Monster monster = new Monster
-            {
-                Name = "Goblin",
-                Level = 1,
-                Health = 100,
-                Mana = 50,
-                Attack = 10,
-                Defense = 5,
-                Speed = 5
-            };
-            monster.PrintProperties();
+            Operators opr = new Operators(MongoOperator.Equal, new BsonDocument("Id", "00001")); Console.WriteLine(opr);
+            A.TestRegex();
 
-
-            //Task.Run(async () => await PerformFindBsons()).Wait();
         }
+
+        public class A
+        {
+            public static Regex CreateEmailRegex()
+            {
+                var regexConfig = new RegexConfig();
+                // Bật ký tự bắt đầu và kết thúc
+                regexConfig.EnableStartWithCaret(true);
+                regexConfig.EnableEndWithDollar(true);
+                // Tên email: ký tự viết hoa, viết thường, số
+                regexConfig.AddPattern(@"[a-zA-Z0-9]+");
+                // Ký tự "@"
+                regexConfig.AddPattern(@"@");
+                // Mã miền là "gmail"
+                regexConfig.AddPattern(@"gmail");
+                // Vùng gì đó (có thể là bất kỳ ký tự nào)
+                regexConfig.AddPattern(@"\.[a-zA-Z]+");
+                // Kết thúc với ".com"
+                regexConfig.AddPattern(@"\.com");
+                // bật không phân biệt chữ hoa chữ thường
+                regexConfig.EnableIgnoreCase(true); 
+                Console.WriteLine("Generated Email Regex string: " + regexConfig.ToString());
+                // Tạo và trả về regex
+                return regexConfig.CreateRegex();
+            }
+
+            public static void TestRegex()
+            {
+                Regex emailRegex = CreateEmailRegex();
+                Console.WriteLine("Generated Email Regex: " + emailRegex);
+
+                // Test the regex
+                List<string> testEmails = new List<string>
+                {
+                    "testA123@gmail.fwe.com",
+                    "Test.Email@gmail.com",
+                    "invalid-email@gmail",
+                    "another.test@notgmail.com"
+                };
+
+                foreach (var email in testEmails)
+                {
+                    Console.WriteLine($"{email} is valid: {emailRegex.IsMatch(email)}");
+                }
+            }
+        }
+
+        static void TestAggregation()
+        {
+            MongoClientController clientController = new MongoClientController("mongodb://localhost:27017").AddDatabaseControllers(new List<string> { "Book" });
+            MongoDatabaseController databaseController = clientController["Book"].AddCollectionControllers(new List<string> { "Book", "Client" });
+            MongoCollectionController ColCtrl_Book = databaseController["Book"];
+            MongoCollectionController ColCtrl_Client = databaseController["Client"];
+
+
+            //// Xây dựng pipeline cho aggregation
+            //var pipeline = new List<BsonDocument>
+            //{
+            //    new BsonDocument("$lookup", new BsonDocument
+            //    {
+            //        { "from", "Client" },
+            //        { "localField", "Id" },
+            //        { "foreignField", "ReadedId._v" },
+            //        { "as", "Clients" }
+            //    }),
+            //    new BsonDocument("$unwind", "$Clients"),
+            //    new BsonDocument("$project", new BsonDocument
+            //    {
+            //        { "_id", 0 },
+            //        { "BookData", "$$ROOT" },
+            //        { "ClientData", "$Clients" }
+            //    })
+            //};
+            //List<BsonDocument> result = ColCtrl_Book.AggregateBsons(pipeline).GetAwaiter().GetResult(); // AggregateBsons
+            //foreach (var doc in result) { Console.WriteLine(doc.ToJson()); }
+
+
+            var pipeline = new List<BsonDocument>
+            {
+                new BsonDocument("$lookup", new BsonDocument
+                {
+                    { "from", "Book" },
+                    { "let", new BsonDocument("readedIds", "$ReadedId._v") },
+                    { "pipeline", new BsonArray
+                        {
+                            new BsonDocument("$match", new BsonDocument
+                            {
+                                { "$expr", new BsonDocument
+                                    {
+                                        { "$in", new BsonArray { "$Id", "$$readedIds" } }
+                                    }
+                                }
+                            })
+                        }
+                    },
+                    { "as", "Books" }
+                }),
+                new BsonDocument("$unwind", "$Books"),
+                new BsonDocument("$project", new BsonDocument
+                {
+                    { "_id", 0 },
+                    { "Book", "$Books" },
+                    { "Client", new BsonDocument
+                        {
+                            { "_id", "$_id" },
+                            { "name", "$name" },
+                            { "email", "$email" }
+                        }
+                    }
+                }),
+                new BsonDocument("$facet", new BsonDocument
+                {
+                    { "books", new BsonArray
+                        {
+                            new BsonDocument("$match", new BsonDocument
+                            {
+                                { "Book", new BsonDocument { { "$ne", BsonNull.Value } } }
+                            })
+                        }
+                    },
+                    { "client", new BsonArray
+                        {
+                            new BsonDocument("$limit", 1),
+                            new BsonDocument("$project", new BsonDocument
+                            {
+                                { "_id", 0 },
+                                { "Book", BsonNull.Value },
+                                { "Client", new BsonDocument
+                                    {
+                                        { "_id", "$_id" },
+                                        { "name", "$name" },
+                                        { "email", "$email" }
+                                    }
+                                }
+                            })
+                        }
+                    }
+                }),
+                new BsonDocument("$project", new BsonDocument
+                {
+                    { "combined", new BsonDocument
+                        {
+                            { "$concatArrays", new BsonArray { "$client", "$books" } }
+                        }
+                    }
+                }),
+                new BsonDocument("$unwind", "$combined"),
+                new BsonDocument("$replaceRoot", new BsonDocument("newRoot", "$combined"))
+            };
+            List<BsonDocument> result = ColCtrl_Client.AggregateBsons(pipeline).GetAwaiter().GetResult();
+            foreach (var doc in result) { Console.WriteLine(doc.ToJson()); }
+        }
+
         static async Task PerformFindBsons()
         {
             MongoClientController clientController = new MongoClientController("mongodb://localhost:27017").AddDatabaseControllers(new List<string> { "GeManagerTest" });
