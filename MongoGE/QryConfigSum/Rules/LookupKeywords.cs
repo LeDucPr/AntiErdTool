@@ -51,7 +51,8 @@ namespace MongoGE.QryConfigSum.Rules
                         _val = bsonCondition;
                 }
                 else if (LookupKeywordsConfig.Let.LookupKeywordType.Contains(mlkKey))
-                    _val = bsonCondition;
+                    if (LookupKeywordsConfig.Let.dfltBsonValTypes.Contains(bsonCondition.GetType()))
+                        _val = bsonCondition;
                 else if (LookupKeywordsConfig.Pipeline.LookupKeywordType.Contains(mlkKey))
                     _val = bsonCondition;
                 else

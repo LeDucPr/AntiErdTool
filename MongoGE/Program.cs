@@ -16,6 +16,8 @@ namespace MongoGE
             Operators opr = new Operators(MongoOperator.Equal, new BsonDocument("Id", "00001")); Console.WriteLine(opr);
             A.TestRegex();
 
+            TestAggregation(); 
+
         }
 
         public class A
@@ -166,8 +168,11 @@ namespace MongoGE
                 new BsonDocument("$unwind", "$combined"),
                 new BsonDocument("$replaceRoot", new BsonDocument("newRoot", "$combined"))
             };
-            List<BsonDocument> result = ColCtrl_Client.AggregateBsons(pipeline).GetAwaiter().GetResult();
-            foreach (var doc in result) { Console.WriteLine(doc.ToJson()); }
+            //in ra pipeline dạng json
+            foreach (var doc in pipeline) { Console.WriteLine(doc.ToJson()); }
+
+            //List<BsonDocument> result = ColCtrl_Client.AggregateBsons(pipeline).GetAwaiter().GetResult();
+            //foreach (var doc in result) { Console.WriteLine(doc.ToJson()); }
         }
 
         static async Task PerformFindBsons()

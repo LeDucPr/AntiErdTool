@@ -28,3 +28,10 @@ Tạo lập các cấu hình có thể chứa các chức năng: (đây cũng l�
 - $bucketAuto: dùng để phân loại các bản ghi vào các nhóm dựa trên giá trị của một trường dữ liệu, và tự động xác định các giới hạn của các nhóm.
 
 
+Bản V1 được thiết kế các toán tử được định nghĩa cơ bản như trên và cho phép lựa chọn những phần toán tử được quy ước trước
+	- Nhược điểm lớn nhất có lẽ là việc chỉnh sửa sẽ khó khăn khi không có kiến trúc cây cụ thể 
+	- Có lẽ cần sử dụng một kiến trúc mới giống như BasicComponent ở trên vậy, lúc đó, ta có thể quản lý được theo dạng cây, nhưng điều cần đổi 
+	là BasicComponent hiện tại chưa hỗ trợ Array, cần một thiết kế khác và tuy nhiên vẫn cần kế thừa BsonValue để có thể sử dụng chung được với 
+	các thành phần khác (quy ươc thiết kế gồm thêm, sửa, xóa toán tử), do trước đó các phần được thiết kế trong Link với BasicComponent được dùng 
+	để lưu trữ các bộ liên kết và tất nhiên bằng thì cấu trúc độc lập và nếu có Parent thì không có một child cụ thể, nên cần một cấu trúc mới 
+	được tùy chỉnh tối ưu cho việc truy cập và thay đổi trong cả Array và Json thông thường, kết hợp được với cả AutoAlias 
