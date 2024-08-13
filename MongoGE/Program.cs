@@ -1,7 +1,5 @@
 ﻿using MongoDB.Bson;
 using MongoGE.Connections;
-using MongoGE.QryConfigSum;
-using MongoGE.QryConfigSum.Rules;
 using System.Text.RegularExpressions;
 
 namespace MongoGE
@@ -13,8 +11,6 @@ namespace MongoGE
         {
             System.Console.OutputEncoding = System.Text.Encoding.UTF8;
 
-            Operators opr = new Operators(MongoOperator.Equal, new BsonDocument("Id", "00001")); Console.WriteLine(opr);
-            A.TestRegex();
 
         }
 
@@ -22,7 +18,7 @@ namespace MongoGE
         {
             public static Regex CreateEmailRegex()
             {
-                var regexConfig = new RegexConfig();
+                var regexConfig = new AggregationsConf.RegexConfig();
                 // Bật ký tự bắt đầu và kết thúc
                 regexConfig.EnableStartWithCaret(true);
                 regexConfig.EnableEndWithDollar(true);
@@ -37,7 +33,7 @@ namespace MongoGE
                 // Kết thúc với ".com"
                 regexConfig.AddPattern(@"\.com");
                 // bật không phân biệt chữ hoa chữ thường
-                regexConfig.EnableIgnoreCase(true); 
+                regexConfig.EnableIgnoreCase(true);
                 Console.WriteLine("Generated Email Regex string: " + regexConfig.ToString());
                 // Tạo và trả về regex
                 return regexConfig.CreateRegex();

@@ -1,43 +1,12 @@
-﻿using MongoDB.Bson;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
-using M = MongoGE.QryConfigSum.MongoOperator;
+using System.Threading.Tasks;
 
-namespace MongoGE.QryConfigSum.Rules
+namespace MongoGE.AggregationsConf
 {
-    #region Cấu hình các toán tử và phân cấp 
-    file class OperatorsConfig // chỉ cho phép trong file này
-    {
-        public static (List<M> operatorType, Type enumType, List<Type> dfltBsonValTypes, List<Type> BsonValAddTypes)
-        OneVsOne = ( // 1 điều kiện duy nhất cho 1 field 
-            new List<M> {
-                M.Equal,
-                M.NotEqual,
-                M.GreaterThan,
-                M.GreaterThanOrEqual,
-                M.LessThan,
-                M.LessThanOrEqual,
-                M.Like,
-                M.NotLike,
-                M.Exists
-            },
-            typeof(M),
-            new List<Type> { typeof(BsonValue), typeof(BsonDocument) },
-            new List<Type> { }
-        ),
-        MulsVsMuls = ( // nhiều điều kiện cho 1 hoặc nhiều field 
-            new List<M>
-            {
-                M.In,
-                M.NotIn,
-                M.And,
-                M.Or
-            },
-            typeof(M),
-            new List<Type> { typeof(BsonArray) },
-            new List<Type> { typeof(BsonDocument), typeof(BsonValue) }
-        );
-    }
-
     public class RegexConfig
     {
         private bool _startWithCaret;
@@ -142,58 +111,5 @@ namespace MongoGE.QryConfigSum.Rules
         public void AddSpecialCharacterPattern() { _patterns.Add(@"[\W_]+"); }
         // Hàm tạo chỉ chứa khoảng trắng
         public void AddWhitespacePattern() { _patterns.Add(@"\s+"); }
-    }
-    #endregion Cấu hình các toán tử và phân cấp 
-
-    /// <summary>
-    /// Bộ quản lý các thông số toán tử 
-    /// </summary>
-    public class Operators : BsonAggregation
-    {
-        //public BsonValue BsonValue { set => _bsonValue = value; }
-        //var mo = (M)Enum.Parse(typeof(M), operatorType.ToString()); // chuyển T sang M 
-        private MongoOperator _moKey;
-        public Operators(MongoOperator moKey, BsonValue bsonCondition) 
-            : base(StringQuery.ToString(moKey), GetDefaultBsonValue(moKey))
-        {
-            _moKey = moKey; // giá trị được đưa trực tiếp vào trong this 
-            try
-            {
-                if (OperatorsConfig.OneVsOne.operatorType.Contains(moKey))
-                {// nó chỉ có một điều kiên nên thay thế chứ không Add 
-                    if (OperatorsConfig.OneVsOne.dfltBsonValTypes.Contains(bsonCondition.GetType()))
-                        _val = bsonCondition;
-                }
-                else if (OperatorsConfig.MulsVsMuls.operatorType.Contains(moKey))
-                {
-                    if (OperatorsConfig.MulsVsMuls.dfltBsonValTypes.Contains(bsonCondition.GetType()))
-                        _val = bsonCondition;
-                    else if (OperatorsConfig.MulsVsMuls.BsonValAddTypes.Contains(bsonCondition.GetType()))
-                        Common.AddToBsonValue(_val, bsonCondition);
-                }
-                else
-                    throw new ArgumentException($"Không thể sử dụng toán tử {nameof(moKey)} trong Operators");
-            }
-            catch
-            {
-                _key = null!;
-                _val = null!;
-            }
-        }
-        private static BsonValue GetDefaultBsonValue(MongoOperator moKey)
-        {
-            if (OperatorsConfig.OneVsOne.operatorType.Contains(moKey))
-                return Common.CreateDefaultBsonValue(OperatorsConfig.OneVsOne.dfltBsonValTypes[0]);
-            else if (OperatorsConfig.MulsVsMuls.operatorType.Contains(moKey))
-                return Common.CreateDefaultBsonValue(OperatorsConfig.MulsVsMuls.dfltBsonValTypes[0]);
-            else
-                throw new ArgumentException($"Không hỗ trợ toán tử {nameof(moKey)} trong MongoOperator");
-        }
-        private static MongoOperator ConvertToMongoOperator<T>(T operatorType)
-        {
-            if (!Enum.IsDefined(typeof(M), operatorType!))
-                throw new ArgumentException("chỉ định dùng Type = MongoGE.QryConfigSum.MongoOperator");
-            return (MongoOperator)Enum.Parse(typeof(M), operatorType!.ToString()!);
-        }
     }
 }
