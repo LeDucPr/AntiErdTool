@@ -1,4 +1,6 @@
 ﻿using MongoDB.Bson;
+using MongoGE.AggregationsConf;
+using MongoGE.AggregationsConf.Enums;
 using MongoGE.Connections;
 using System.Text.RegularExpressions;
 
@@ -11,7 +13,14 @@ namespace MongoGE
         {
             System.Console.OutputEncoding = System.Text.Encoding.UTF8;
 
-
+            var opr = OperatorHelper.OperatorTypes[EOperatorTypes.Stage];
+            // in toàn bộ các operator của Stage
+            foreach (var op in opr)
+            {
+                System.Console.WriteLine(op);
+            }
+            var opra = OperatorHelper.GetOperator(EComparisonOperator.Equal);
+            Console.WriteLine(opra);
         }
 
         public class A

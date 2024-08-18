@@ -1,5 +1,7 @@
 ﻿using MongoDB.Bson;
+using MongoGE.AggregationsConf.Enums;
 using EOType = MongoGE.AggregationsConf.Enums.EOperatorTypes;
+using EComparisonOpr = MongoGE.AggregationsConf.Enums.EComparisonOperator;
 
 namespace MongoGE.AggregationsConf
 {
@@ -7,19 +9,180 @@ namespace MongoGE.AggregationsConf
     {
         private static Dictionary<EOType, BsonDocument> KeyTypesConf = new Dictionary<EOType, BsonDocument>
         {
-            { EOType.Comparison, new BsonDocument { 
-                { "$eq", new BsonArray { BsonType.String, BsonType.Int32, BsonType.Double, BsonType.Boolean, BsonType.DateTime, BsonType.Array, BsonType.Document} }, 
-                { "$ne", new BsonArray { BsonType.String, BsonType.Int32, BsonType.Double, BsonType.Boolean, BsonType.DateTime, BsonType.Array, BsonType.Document} }, 
-                { "$gt", new BsonArray { BsonType.String, BsonType.Int32, BsonType.Double, BsonType.DateTime, BsonType.Array, BsonType.Document} }, 
-                { "$gte", new BsonArray { BsonType.String, BsonType.Int32, BsonType.Double, BsonType.DateTime, BsonType.Array, BsonType.Document} }, 
-                { "$lt", new BsonArray { BsonType.String, BsonType.Int32, BsonType.Double, BsonType.DateTime, BsonType.Array, BsonType.Document} }, 
-                { "$lte", new BsonArray { BsonType.String, BsonType.Int32, BsonType.Double, BsonType.DateTime, BsonType.Array, BsonType.Document} } }
-            },
-            { EOType.Logical, new BsonDocument { 
-                { "$and", BsonType.Array }, { "$or", BsonType.Array }, { "$not", BsonType.Array } } },
-            { EOType.Set, new BsonDocument { { "$in", BsonType.Array }, { "$nin", BsonType.Array }, { "$all", BsonType.Array }, { "$size", BsonType.Int32 }, { "$exists", BsonType.Boolean } } },
-            { EOType.Element, new BsonDocument { { "$regex", BsonType.String }, { "$type", BsonType.String } } },
-            { EOType.Stage, new BsonDocument { { "$match", BsonType.Document }, { "$project", BsonType.Document }, { "$group", BsonType.Document }, { "$sort", BsonType.Document }, { "$skip", BsonType.Int32 }, { "$limit", BsonType.Int32 }, { "$unwind", BsonType.String }, { "$lookup", BsonType.Document }, { "$addFields", BsonType.Document }, { "$replaceRoot", BsonType.Document }, { "$merge", BsonType.Document }, { "$bucket", BsonType.Document }, { "$sample", BsonType.Document }, { "$count", BsonType.String }, { "$facet", BsonType.Document }, { "$concatArrays", BsonType.Array } } }
+            { EOType.Comparison, CreateComparisonBsonDocument() },
+            { EOType.Logical, CreateLogicalBsonDocument() },
+            { EOType.Set, CreateSetBsonDocument() },
+            { EOType.Element, CreateElementBsonDocument() },
+            { EOType.Stage, CreateStageBsonDocument() }
         };
+        private static BsonDocument CreateComparisonBsonDocument() // tạo document cho toán tử so sánh
+        {
+            var bsonDocument = new BsonDocument();
+            var comparisonOperators = new Dictionary<EComparisonOpr, BsonValue>
+            {
+                { EComparisonOperator.Equal, new BsonArray { BsonType.String, BsonType.Int32, BsonType.Double, BsonType.Boolean, BsonType.DateTime, BsonType.Array, BsonType.Document } },
+                { EComparisonOperator.NotEqual, new BsonArray { BsonType.String, BsonType.Int32, BsonType.Double, BsonType.Boolean, BsonType.DateTime, BsonType.Array, BsonType.Document } },
+                { EComparisonOperator.GreaterThan, new BsonArray { BsonType.String, BsonType.Int32, BsonType.Double, BsonType.DateTime, BsonType.Array, BsonType.Document } },
+                { EComparisonOperator.GreaterThanOrEqual, new BsonArray { BsonType.String, BsonType.Int32, BsonType.Double, BsonType.DateTime, BsonType.Array, BsonType.Document } },
+                { EComparisonOperator.LessThan, new BsonArray { BsonType.String, BsonType.Int32, BsonType.Double, BsonType.DateTime, BsonType.Array, BsonType.Document } },
+                { EComparisonOperator.LessThanOrEqual, new BsonArray { BsonType.String, BsonType.Int32, BsonType.Double, BsonType.DateTime, BsonType.Array, BsonType.Document } }
+            };
+            AddOperatorToBsonDocument<EComparisonOperator>(bsonDocument, comparisonOperators);
+            return bsonDocument;
+        }
+        private static BsonDocument CreateLogicalBsonDocument() // tạo document cho toán tử logic
+        {
+            var bsonDocument = new BsonDocument();
+            var logicalOperators = new Dictionary<ELogicalOperator, BsonValue>
+            {
+                { ELogicalOperator.And, BsonType.Array },
+                { ELogicalOperator.Or, BsonType.Array },
+                { ELogicalOperator.Not, BsonType.Array }
+            };
+            AddOperatorToBsonDocument<ELogicalOperator>(bsonDocument, logicalOperators);
+            return bsonDocument;
+        }
+        private static BsonDocument CreateSetBsonDocument() // tạo document cho toán tử set
+        {
+            var bsonDocument = new BsonDocument();
+            var setOperators = new Dictionary<ESetOperator, BsonValue>
+            {
+                { ESetOperator.In, BsonType.Array },
+                { ESetOperator.NotIn, BsonType.Array },
+                { ESetOperator.All, BsonType.Array },
+                { ESetOperator.Size, BsonType.Int32 },
+                { ESetOperator.Exists, BsonType.Boolean }
+            };
+            AddOperatorToBsonDocument<ESetOperator>(bsonDocument, setOperators);
+            return bsonDocument;
+        }
+        private static BsonDocument CreateElementBsonDocument() // tạo document cho toán tử element
+        {
+            var bsonDocument = new BsonDocument();
+            var elementOperators = new Dictionary<EElementOperator, BsonValue>
+            {
+                { EElementOperator.Regex, BsonType.String },
+                { EElementOperator.Type, BsonType.String }
+            };
+            AddOperatorToBsonDocument<EElementOperator>(bsonDocument, elementOperators);
+            return bsonDocument;
+        }
+        private static BsonDocument CreateStageBsonDocument() // tạo document cho toán tử stage
+        {
+            var bsonDocument = new BsonDocument();
+            AddOperatorToBsonDocument<EStageOperator>(bsonDocument, new Dictionary<EStageOperator, BsonValue>
+            {
+                { EStageOperator.Match, BsonType.Document }, // lọc sử liệu 
+                { EStageOperator.Project, new BsonDocument { // toán tử xuất 
+                    { "include", BsonType.String },
+                    { "exclude", BsonType.String }
+                }},
+                { EStageOperator.Group, new BsonDocument { // nhóm dữ liệu
+                    { "_id", BsonType.String }, // nhóm theo trường
+                    { "sum", BsonType.String }, // tổng
+                    { "avg", BsonType.String } // trung bình
+                }},
+                { EStageOperator.Sort, new BsonDocument { // sắp xếp
+                    { "field", BsonType.String },
+                    { "order", BsonType.Int32 }
+                }},
+                { EStageOperator.Skip, BsonType.Int32 }, // bỏ qua số lượng
+                { EStageOperator.Limit, BsonType.Int32 }, // đặt giới hạn số lượng 
+                { EStageOperator.Unwind, BsonType.String }, // giải phóng mảng
+                { EStageOperator.Lookup, new BsonDocument { // toán tử Join 
+                    { "from", BsonType.String }, // bốc từ collection
+                    { "let", BsonType.Document }, // biến truyền vào
+                    { "pipeline", BsonType.Array }, // mảng các stage
+                    { "localField", BsonType.String }, // khóa chính
+                    { "foreignField", BsonType.String }, // khóa ngoại
+                    { "as", BsonType.String } // alias
+                }},
+                { EStageOperator.AddFields, new BsonDocument { // thêm trường mới
+                    { "newField", BsonType.String } // tên trường mới (sau này được đồng bộ cấu hình alias)
+                }},
+                { EStageOperator.ReplaceRoot, new BsonDocument { // thay thế root
+                    { "newRoot", BsonType.String } // tên trường mới (sau này được đồng bộ cấu hình alias)
+                }},
+                { EStageOperator.Merge, new BsonDocument { // gộp dữ liệu
+                    { "into", BsonType.String }, // tên collection
+                    { "on", BsonType.String }, // điều kiện gộp
+                    { "whenMatched", BsonType.String }, // hành động khi trùng
+                    { "whenNotMatched", BsonType.String } // hành động khi không trùng
+                }},
+                { EStageOperator.Bucket, new BsonDocument { // phân loại dữ liệu
+                    { "groupBy", BsonType.String }, // trường phân loại
+                    { "boundaries", BsonType.Array }, // mảng giới hạn
+                    { "default", BsonType.String } // giá trị mặc định
+                }},
+                { EStageOperator.Sample, new BsonDocument { // lấy mẫu
+                    { "size", BsonType.Int32 } // số lượng
+                }},
+                { EStageOperator.Count, BsonType.String }, // đếm số lượng
+                { EStageOperator.Facet, new BsonDocument { // tạo nhiều kết quả 
+                    { "output", BsonType.Document }
+                }},
+                { EStageOperator.ConcatArrays, BsonType.Array } // nối mảng
+            });
+            return bsonDocument;
+        }
+        private static void AddOperatorToBsonDocument<T>(BsonDocument bsonDocument, Dictionary<T, BsonValue> operatorValues) where T : Enum
+        {
+            foreach (var value in Enum.GetValues(typeof(T)))
+            {
+                var fieldInfo = typeof(T).GetField(value.ToString()!);
+                var attribute = (OperatorAttribute)Attribute.GetCustomAttribute(fieldInfo!, typeof(OperatorAttribute))!;
+                if (attribute != null && operatorValues.ContainsKey((T)value))
+                    bsonDocument.Add(attribute.Operator, operatorValues[(T)value]);
+            }
+        }
+    }
+
+    public class OperatorHelper
+    {
+        private static readonly Lazy<Dictionary<EOType, Dictionary<Enum, string>>> _operatorTypes =
+            new Lazy<Dictionary<EOType, Dictionary<Enum, string>>>(LoadOperatorTypes);
+
+        public static Dictionary<EOType, Dictionary<Enum, string>> OperatorTypes => _operatorTypes.Value;
+
+        private static Dictionary<EOType, Dictionary<Enum, string>> LoadOperatorTypes()
+        {
+            var operators = new Dictionary<EOType, Dictionary<Enum, string>>();
+            operators[EOType.Comparison] = GetOperatorsFromEnum<EComparisonOperator>();
+            operators[EOType.Logical] = GetOperatorsFromEnum<ELogicalOperator>();
+            operators[EOType.Set] = GetOperatorsFromEnum<ESetOperator>();
+            operators[EOType.Element] = GetOperatorsFromEnum<EElementOperator>();
+            operators[EOType.Stage] = GetOperatorsFromEnum<EStageOperator>();
+            return operators;
+        }
+
+        private static Dictionary<Enum, string> GetOperatorsFromEnum<T>() where T : Enum
+        {
+            var operatorDict = new Dictionary<Enum, string>();
+
+            foreach (var value in Enum.GetValues(typeof(T)))
+            {
+                var fieldInfo = typeof(T).GetField(value.ToString()!);
+                var attribute = (OperatorAttribute)Attribute.GetCustomAttribute(fieldInfo!, typeof(OperatorAttribute))!;
+                if (attribute != null)
+                    operatorDict[(Enum)value] = attribute.Operator;
+            }
+            return operatorDict;
+        }
+
+        public static string GetOperator<T>(T enumValue) where T : Enum
+        {
+            var eoType = GetEOTypeFromEnum(enumValue);
+            return OperatorTypes[eoType][enumValue];
+        }
+
+        private static EOType GetEOTypeFromEnum<T>(T enumValue) where T : Enum
+        {
+            if (typeof(T) == typeof(EComparisonOperator)) return EOType.Comparison;
+            if (typeof(T) == typeof(ELogicalOperator)) return EOType.Logical;
+            if (typeof(T) == typeof(ESetOperator)) return EOType.Set;
+            if (typeof(T) == typeof(EElementOperator)) return EOType.Element;
+            if (typeof(T) == typeof(EStageOperator)) return EOType.Stage;
+            throw new ArgumentException("Unknown enum type");
+        }
     }
 }

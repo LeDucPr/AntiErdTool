@@ -1,6 +1,6 @@
 ﻿namespace MongoGE.AggregationsConf.Enums
 {
-    enum EOperatorTypes
+    public enum EOperatorTypes
     {
         Comparison,
         Logical,
