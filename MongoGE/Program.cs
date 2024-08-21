@@ -19,8 +19,19 @@ namespace MongoGE
             {
                 System.Console.WriteLine(op);
             }
-            var opra = OperatorHelper.GetOperator(EComparisonOperator.Equal);
+            string? opra = OperatorHelper.GetOperator(EComparisonOperator.Equal);
             Console.WriteLine(opra);
+
+            // Sử dụng hàm GetAddedValues
+            Console.WriteLine();
+            var addedValues = OperatorHelper.GetAddedValues(EStageOperator.Lookup);
+            foreach (var kvp in addedValues)
+                Console.WriteLine($"{kvp.Key}: {kvp.Value}");
+
+            Console.WriteLine(); 
+            addedValues = OperatorHelper.GetAddedValues(EComparisonOperator.Equal);
+            foreach (var kvp in addedValues)
+                Console.WriteLine($"{kvp.Key}: {kvp.Value}");
         }
 
         public class A
